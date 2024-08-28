@@ -4,10 +4,13 @@ import com.nhnacademy.jdbc.common.Page;
 import com.nhnacademy.jdbc.student.domain.Student;
 import com.nhnacademy.jdbc.student.repository.StudentRepository;
 import lombok.extern.slf4j.Slf4j;
-import java.sql.*;
+
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
 import java.util.Optional;
 
 @Slf4j
@@ -123,13 +126,53 @@ public class StudentRepositoryImpl implements StudentRepository {
     @Override
     public long totalCount(Connection connection) {
         //todo#4 totalCount 구현
-        return 0l;
+        String sql = "select count(*) from jdbc_students";
+        ResultSet resultSet = null;
+
+        try(PreparedStatement statement = connection.prepareStatement(sql)) {
+            resultSet = statement.executeQuery();
+            if (resultSet.next()) {
+                return resultSet.getLong(1);
+            }
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+        return 0L;
     }
 
     @Override
     public Page<Student> findAll(Connection connection, int page, int pageSize) {
         //todo#5 페이징 처리 구현
-        return null;
+        int offset = (page - 1) * pageSize;
+        String sql = "select * from jdbc_students order by id desc limit ?,?";
+        ResultSet resultSet = null;
+        try(PreparedStatement statement = connection.prepareStatement(sql)) {
+            statement.setInt(1, offset);
+            statement.setInt(2, pageSize);
+
+            resultSet = statement.executeQuery();
+            List<Student> students = new ArrayList<>();
+            while (resultSet.next()) {
+                Student student = new Student(
+                        resultSet.getString("id"),
+                        resultSet.getString("name"),
+                        Student.GENDER.valueOf(resultSet.getString("gender")),
+                        resultSet.getInt("age"),
+                        resultSet.getTimestamp("created_at").toLocalDateTime()
+                );
+                students.add(student);
+            }
+
+            long total = 0;
+
+            if (!students.isEmpty()) {
+                total = totalCount(connection);
+            }
+
+            return new Page<>(students, total);
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
     }
 
 }
