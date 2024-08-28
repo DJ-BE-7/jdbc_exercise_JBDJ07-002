@@ -13,7 +13,7 @@ public class DbUtils {
         Connection connection = null;
         try {
             //todo connection.
-            connection = DriverManager.getConnection("jdbc:mysql://ip:3306/database","user_name","user_password");
+            connection = DriverManager.getConnection("jdbc:mysql://133.186.241.167:3306/nhn_academy_102","nhn_academy_102","cM2godls!");
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }

@@ -1,8 +1,11 @@
 package com.nhnacademy.jdbc.student.domain;
 
+import lombok.Getter;
+
 import java.time.LocalDateTime;
 import java.util.Objects;
 
+@Getter
 public class Student {
 
     public enum GENDER{
@@ -29,26 +32,6 @@ public class Student {
         this.gender = gender;
         this.age = age;
         this.createdAt = createdAt;
-    }
-
-    public String getId() {
-        return id;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public GENDER getGender() {
-        return gender;
-    }
-
-    public Integer getAge() {
-        return age;
-    }
-
-    public LocalDateTime getCreatedAt() {
-        return createdAt;
     }
 
     @Override
